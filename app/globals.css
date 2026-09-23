@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  ::selection {
+    @apply bg-primary-light text-primary-dark;
+  }
+}
+
+@layer components {
+  .container-app {
+    @apply mx-auto w-full max-w-[1200px] px-3 sm:px-4;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-primary px-5 py-2.5
+      text-sm font-semibold text-white transition-colors hover:bg-primary-dark
+      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+      focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-sale {
+    @apply inline-flex items-center justify-center gap-2 bg-sale px-5 py-2.5
+      text-sm font-semibold text-white transition-colors hover:bg-sale-dark
+      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+      focus-visible:outline-sale;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 border border-border
+      bg-surface px-4 py-2 text-sm font-medium text-foreground transition-colors
+      hover:border-primary hover:text-primary;
+  }
+
+  .badge-flash {
+    @apply inline-flex items-center bg-sale px-1.5 py-0.5 text-[10px] font-bold
+      uppercase tracking-wide text-white;
+  }
+
+  .badge-off {
+    @apply inline-flex items-center bg-[#FFE8EA] px-1.5 py-0.5 text-[10px]
+      font-semibold text-sale;
+  }
+
+  .price {
+    @apply font-semibold text-sale;
+  }
+}
