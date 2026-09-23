@@ -1,4 +1,4 @@
-import { Store, Smartphone } from "lucide-react";
+import { Store, Smartphone, ShieldCheck } from "lucide-react";
 
 function KenyaFlag({ className = "h-3.5 w-5" }: { className?: string }) {
   return (
@@ -21,6 +21,13 @@ export function TopBar() {
     <div className="border-b border-border bg-surface">
       <div className="container-app flex h-8 items-center justify-between text-xs text-foreground">
         <div className="flex items-center gap-5">
+          <a
+            href="/admin"
+            className="flex items-center gap-1.5 font-medium text-slate-800 transition-colors hover:text-[#24dcac]"
+          >
+            <ShieldCheck className="h-3.5 w-3.5 text-[#24dcac]" aria-hidden />
+            Admin Portal
+          </a>
           <a
             href="/seller-center"
             className="flex items-center gap-1.5 transition-colors hover:text-primary"

@@ -145,6 +145,24 @@ export function ProductInfo({ product }: { product: Product }) {
         </div>
       </div>
 
+      {/* Automated Stock Inventory Status Badge */}
+      <div className="flex items-center gap-3 text-xs pt-1">
+        <span className="w-28 shrink-0 text-muted font-medium">Availability:</span>
+        {product.stockQuantity === 0 || !product.inStock ? (
+          <span className="font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded">
+            Out of Stock (0 units left)
+          </span>
+        ) : product.stockQuantity <= (product.lowStockThreshold || 10) ? (
+          <span className="font-bold text-amber-800 bg-amber-50 border border-amber-300 px-2.5 py-0.5 rounded animate-pulse">
+            ⚠️ Only {product.stockQuantity} left in stock — order soon!
+          </span>
+        ) : (
+          <span className="font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded">
+            ✓ In Stock ({product.stockQuantity} units available)
+          </span>
+        )}
+      </div>
+
       <div className="flex items-center gap-3 text-sm">
         <span className="w-28 shrink-0 text-muted">Quantity:</span>
         <QuantityStepper value={quantity} onChange={setQuantity} />

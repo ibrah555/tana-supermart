@@ -3,11 +3,8 @@ import { Suspense } from "react";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
-import { TopBar } from "@/components/layout/TopBar";
-import { VoucherBanner } from "@/components/layout/VoucherBanner";
-import { Header } from "@/components/layout/Header";
-import { MainNav } from "@/components/layout/MainNav";
-import { Footer } from "@/components/layout/Footer";
+import { AdminProvider } from "@/context/AdminContext";
+import { StoreLayoutWrapper } from "@/components/layout/StoreLayoutWrapper";
 
 export const metadata: Metadata = {
   title: "Tana-Supermart | Affordable Online Shopping in Kenya",
@@ -24,16 +21,13 @@ export default function RootLayout({
     <html lang="en">
       <body className="flex min-h-screen flex-col font-sans">
         <AuthProvider>
-          <CartProvider>
-            <TopBar />
-            <VoucherBanner />
-            <Header />
-            <MainNav />
-            <main className="flex-1">
-              <Suspense fallback={null}>{children}</Suspense>
-            </main>
-            <Footer />
-          </CartProvider>
+          <AdminProvider>
+            <CartProvider>
+              <StoreLayoutWrapper>
+                <Suspense fallback={null}>{children}</Suspense>
+              </StoreLayoutWrapper>
+            </CartProvider>
+          </AdminProvider>
         </AuthProvider>
       </body>
     </html>
