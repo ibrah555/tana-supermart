@@ -213,7 +213,9 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     setMpesaSettings((prev) => ({ ...prev, ...updates }));
   };
 
-  const queryDarajaStatus = (checkoutRequestId: string) => {
+  const queryDarajaStatus = (
+    checkoutRequestId: string
+  ): { status: "COMPLETED" | "FAILED" | "PENDING"; message: string } => {
     const existing = mpesaLedger.find((tx) => tx.checkoutRequestId === checkoutRequestId);
     if (existing && existing.status === "COMPLETED") {
       return { status: "COMPLETED", message: `Payment verified. Safaricom Receipt: ${existing.mpesaReceiptNumber}` };
