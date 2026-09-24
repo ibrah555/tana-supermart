@@ -22,6 +22,7 @@ export default function CheckoutPage() {
   const [stkModalOpen, setStkModalOpen] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
+  const [activeDbOrder, setActiveDbOrder] = useState<{ id: string; orderNumber: string } | null>(null);
 
   const selectedItems = useMemo(
     () => items.filter((i) => i.selected),
@@ -51,16 +52,85 @@ export default function CheckoutPage() {
   const shippingFee = selectedCount > 0 ? FLAT_SHIPPING_FEE : 0;
   const grandTotal = selectedTotal + shippingFee;
 
-  function triggerCheckout() {
-    setStkModalOpen(true);
+  async function triggerCheckout() {
+    setPlacing(true);
+
+    try {
+      // 1. Create order in PostgreSQL database via live API route
+      const orderPayload = {
+        userId: user.id || null,
+        customerName: user.name || "Customer",
+        customerEmail: user.email || "",
+        customerPhone: user.phone || "+254 700 000 000",
+        county: user.defaultAddress?.county || "Nairobi",
+        addressLine: user.defaultAddress?.addressLines?.join(", ") || "Nairobi, Kenya",
+        subtotal: selectedTotal,
+        deliveryFee: shippingFee,
+        discount: 0,
+        total: grandTotal,
+        paymentMethod: "MPESA",
+        items: selectedItems.map((i) => ({
+          productId: i.product.id,
+          title: i.product.name,
+          price: i.product.price,
+          costPrice: i.product.costPrice || i.product.price * 0.7,
+          quantity: i.quantity,
+          image: i.product.image || "",
+        })),
+      };
+
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderPayload),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.order) {
+          setActiveDbOrder({ id: data.order.id, orderNumber: data.order.orderNumber });
+
+          // 2. Initiate M-PESA STK Push prompt via Daraja API
+          fetch("/api/payments/mpesa/stkpush", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              phoneNumber: user.phone || "+254700000000",
+              amount: grandTotal,
+              orderId: data.order.id,
+            }),
+          }).catch(console.warn);
+        }
+      }
+    } catch (e) {
+      console.warn("Order creation notice, using client fallback:", e);
+    } finally {
+      setPlacing(false);
+      setStkModalOpen(true);
+    }
   }
 
-  function handlePaymentSuccess(txnId: string) {
+  async function handlePaymentSuccess(txnId: string) {
     setStkModalOpen(false);
     setPlacing(true);
 
+    const orderNumber = activeDbOrder?.orderNumber || "TS-2026-" + Math.floor(1000 + Math.random() * 9000);
+    const orderDbId = activeDbOrder?.id;
+
+    // 3. Mark order as PAID in PostgreSQL with the Safaricom receipt
+    if (orderDbId) {
+      fetch(`/api/orders/${orderDbId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: "PAID",
+          mpesaReceipt: txnId,
+        }),
+      }).catch(console.error);
+    }
+
     const newOrder: Order = {
-      id: "TS-2026-" + Math.floor(1000 + Math.random() * 9000),
+      id: orderNumber,
       date: new Date().toISOString(),
       status: "Processing",
       items: selectedItems.map((i) => ({

@@ -49,6 +49,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // fallback to initial
     } finally {
       setHydrated(true);
+      // Fetch live user orders from backend API
+      fetch("/api/orders?limit=20")
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data?.orders && data.orders.length > 0) {
+            const mapped = data.orders.map((o: any) => ({
+              id: o.orderNumber || o.id,
+              date: o.createdAt || new Date().toISOString(),
+              status: o.status === "DELIVERED" ? "Delivered" : o.status === "SHIPPED" ? "Shipped" : o.status === "CANCELLED" ? "Cancelled" : "Processing",
+              items: (o.items || []).map((item: any) => ({
+                product: {
+                  id: item.productId || item.id,
+                  name: item.title,
+                  price: Number(item.price),
+                  costPrice: Number(item.costPrice || 0),
+                  image: item.image || "",
+                  categorySlug: "general",
+                  storeId: "tana-direct",
+                  stockQuantity: 10,
+                  rating: 5,
+                  reviews: 1,
+                  inStock: true,
+                },
+                quantity: Number(item.quantity || 1),
+                price: Number(item.price),
+                costPrice: Number(item.costPrice || 0),
+              })),
+              totalAmount: Number(o.total || 0),
+              cogs: Number(o.cogs || 0),
+              profit: Number(o.profit || 0),
+              paymentMethod: o.mpesaReceipt ? `M-PESA (${o.mpesaReceipt})` : (o.paymentMethod || "M-PESA"),
+              shippingAddress: {
+                fullName: o.customerName || "Customer",
+                phone: o.customerPhone || "+254 700 000 000",
+                addressLines: [o.addressLine || "Kenya"],
+                city: o.county || "Nairobi",
+                county: o.county || "Nairobi",
+              },
+              trackingNumber: o.trackingNumber || "KE-EXP-9182310",
+              estimatedDelivery: o.estimatedDelivery || "2-3 Business Days",
+            }));
+            setOrders(mapped);
+          }
+        })
+        .catch(console.warn);
     }
   }, []);
 

@@ -15,20 +15,32 @@ export function AdminAuthGuard({ children }: { children: ReactNode }) {
     return <>{children}</>;
   }
 
-  const handleLogin = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = loginAdmin(email, password);
-    if (!res.success) {
-      setError(res.error || "Authentication failed");
-    } else {
-      setError("");
+    setLoading(true);
+    try {
+      const res = await loginAdmin(email, password);
+      if (!res.success) {
+        setError(res.error || "Authentication failed");
+      } else {
+        setError("");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleQuickLogin = () => {
+  const handleQuickLogin = async () => {
     setEmail(defaultAdminCredentials.email);
     setPassword(defaultAdminCredentials.passwordHash);
-    loginAdmin(defaultAdminCredentials.email, defaultAdminCredentials.passwordHash);
+    setLoading(true);
+    try {
+      await loginAdmin(defaultAdminCredentials.email, defaultAdminCredentials.passwordHash);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

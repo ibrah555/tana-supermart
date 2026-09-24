@@ -6,7 +6,7 @@ import { useAdmin } from "@/context/AdminContext";
 
 export function AdminHeader() {
   const pathname = usePathname();
-  const { mpesaSettings, adminUser } = useAdmin();
+  const { mpesaSettings, adminUser, isLiveDbConnected } = useAdmin();
 
   const getPageTitle = () => {
     if (pathname === "/admin") return "Platform Overview & KPIs";
@@ -34,6 +34,15 @@ export function AdminHeader() {
       </div>
 
       <div className="flex items-center gap-4">
+        {/* Neon Database Status Pill */}
+        <div className="hidden lg:flex items-center gap-2 px-3 py-1 bg-slate-50 border border-slate-200 rounded text-xs text-slate-700 font-medium">
+          <span className={`h-2 w-2 rounded-full ${isLiveDbConnected ? "bg-emerald-500" : "bg-blue-500 animate-pulse"}`} />
+          <span>DB:</span>
+          <span className="font-bold text-slate-900">
+            {isLiveDbConnected ? "Neon Live" : "PostgreSQL"}
+          </span>
+        </div>
+
         {/* Daraja Status Pill */}
         <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-slate-50 border border-slate-200 rounded text-xs text-slate-700 font-medium">
           <span className="h-2 w-2 rounded-full bg-emerald-500" />

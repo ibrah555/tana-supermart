@@ -24,14 +24,15 @@ export default function AdminFinancePage() {
   const completedTransactions = mpesaLedger.filter((t) => t.status === "COMPLETED");
   const totalVolume = completedTransactions.reduce((acc, t) => acc + t.amount, 0);
 
-  const handleManualQuery = (reqId: string) => {
+  const handleManualQuery = async (reqId: string) => {
     setIsQuerying(true);
     setQueryResult(null);
-    setTimeout(() => {
-      const res = queryDarajaStatus(reqId);
+    try {
+      const res = await queryDarajaStatus(reqId);
       setQueryResult(res);
+    } finally {
       setIsQuerying(false);
-    }, 600);
+    }
   };
 
   return (
