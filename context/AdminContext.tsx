@@ -272,7 +272,22 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     try {
       const storedAuth = localStorage.getItem(ADMIN_AUTH_KEY);
       if (storedAuth) {
-        setAdminUser(JSON.parse(storedAuth));
+        try {
+          const parsed = JSON.parse(storedAuth);
+          if (parsed && typeof parsed === "object" && parsed.email) {
+            setAdminUser({
+              email: parsed.email,
+              name: parsed.name || "Administrator",
+              role: parsed.role || "SUPER_ADMIN",
+              phone: parsed.phone || "+254 700 000 000",
+              passwordHash: parsed.passwordHash || "Admin@2026!",
+            });
+          } else {
+            setAdminUser(null);
+          }
+        } catch {
+          setAdminUser(null);
+        }
       } else {
         setAdminUser(null);
       }

@@ -16,11 +16,28 @@ export default function AdminLoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
-    if (isAdminAuthenticated) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && isAdminAuthenticated) {
       router.replace("/admin");
     }
-  }, [isAdminAuthenticated, router]);
+  }, [mounted, isAdminAuthenticated, router]);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold">
+          <span className="h-4 w-4 border-2 border-slate-400 border-t-slate-800 rounded-full animate-spin" />
+          <span>Loading admin portal...</span>
+        </div>
+      </div>
+    );
+  }
 
   if (isAdminAuthenticated) {
     return (

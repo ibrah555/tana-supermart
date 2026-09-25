@@ -61,7 +61,7 @@ export function AdminSidebar() {
           <div className="mx-3 mt-4 p-3 bg-white/40 border border-slate-900/10 rounded">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-900/10">
-                {adminUser.role.replace("_", " ")}
+                {(adminUser.role || "SUPER_ADMIN").replace("_", " ")}
               </span>
               <span className="inline-block h-2 w-2 rounded-full bg-emerald-700" title="Online" />
             </div>

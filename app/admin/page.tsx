@@ -17,13 +17,18 @@ import { useAdmin } from "@/context/AdminContext";
 export default function AdminOverviewPage() {
   const { orders, products, mpesaLedger, stores, countyRates } = useAdmin();
 
+  const safeOrders = orders || [];
+  const safeProducts = products || [];
+  const safeMpesaLedger = mpesaLedger || [];
+  const safeStores = stores || [];
+
   // Metrics calculations
-  const totalGmv = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
-  const paidOrders = orders.filter((o) => o.status !== "Cancelled");
-  const completedMpesa = mpesaLedger.filter((t) => t.status === "COMPLETED");
-  const pendingMpesa = mpesaLedger.filter((t) => t.status === "PENDING");
-  const outOfStockProducts = products.filter((p) => !p.inStock);
-  const flashSaleItems = products.filter((p) => p.isFlashSale);
+  const totalGmv = safeOrders.reduce((sum, o) => sum + (o?.totalAmount || 0), 0);
+  const paidOrders = safeOrders.filter((o) => o && o.status !== "Cancelled");
+  const completedMpesa = safeMpesaLedger.filter((t) => t && t.status === "COMPLETED");
+  const pendingMpesa = safeMpesaLedger.filter((t) => t && t.status === "PENDING");
+  const outOfStockProducts = safeProducts.filter((p) => p && !p.inStock);
+  const flashSaleItems = safeProducts.filter((p) => p && p.isFlashSale);
 
   return (
     <div className="space-y-6">
@@ -170,41 +175,48 @@ export default function AdminOverviewPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {orders.slice(0, 5).map((order) => (
-                  <tr key={order.id} className="hover:bg-slate-50">
-                    <td className="py-3 font-mono font-semibold text-slate-900">
-                      {order.id}
-                    </td>
-                    <td className="py-3">
-                      <div className="font-medium text-slate-900">{order.shippingAddress?.fullName}</div>
-                      <div className="text-[11px] text-slate-500 flex items-center gap-1">
-                        <MapPin className="h-3 w-3 text-slate-400" />
-                        {order.shippingAddress?.city}, {order.shippingAddress?.county}
-                      </div>
-                    </td>
-                    <td className="py-3 text-slate-600">
-                      {order.items?.length || 1} item(s)
-                    </td>
-                    <td className="py-3 font-semibold text-slate-900">
-                      KES {order.totalAmount.toLocaleString()}
-                    </td>
-                    <td className="py-3">
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                          order.status === "Delivered"
-                            ? "bg-emerald-100 text-emerald-800"
-                            : order.status === "Shipped"
-                            ? "bg-sky-100 text-sky-800"
-                            : order.status === "Processing"
-                            ? "bg-amber-100 text-amber-800"
-                            : "bg-slate-100 text-slate-700"
-                        }`}
-                      >
-                        {order.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                {safeOrders.slice(0, 5).map((order) => {
+                  if (!order) return null;
+                  const total = Number(order.totalAmount || 0);
+                  return (
+                    <tr key={order.id} className="hover:bg-slate-50">
+                      <td className="py-3 font-mono font-semibold text-slate-900">
+                        {order.id}
+                      </td>
+                      <td className="py-3">
+                        <div className="font-medium text-slate-900">
+                          {order.shippingAddress?.fullName || "Customer"}
+                        </div>
+                        <div className="text-[11px] text-slate-500 flex items-center gap-1">
+                          <MapPin className="h-3 w-3 text-slate-400" />
+                          {order.shippingAddress?.city || "Kenya"},{" "}
+                          {order.shippingAddress?.county || "Nairobi"}
+                        </div>
+                      </td>
+                      <td className="py-3 text-slate-600">
+                        {order.items?.length || 1} item(s)
+                      </td>
+                      <td className="py-3 font-semibold text-slate-900">
+                        KES {total.toLocaleString()}
+                      </td>
+                      <td className="py-3">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                            order.status === "Delivered"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : order.status === "Shipped"
+                              ? "bg-sky-100 text-sky-800"
+                              : order.status === "Processing"
+                              ? "bg-amber-100 text-amber-800"
+                              : "bg-slate-100 text-slate-700"
+                          }`}
+                        >
+                          {order.status || "Processing"}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import Link from "next/link";
 import { useAdmin } from "@/context/AdminContext";
 import { ShieldCheck, KeyRound, ArrowRight } from "lucide-react";
@@ -8,9 +8,25 @@ import { defaultAdminCredentials } from "@/data/adminPresets";
 
 export function AdminAuthGuard({ children }: { children: ReactNode }) {
   const { isAdminAuthenticated, loginAdmin } = useAdmin();
+  const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState(defaultAdminCredentials.email);
   const [password, setPassword] = useState(defaultAdminCredentials.passwordHash);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <div className="flex items-center gap-2 text-slate-500 text-xs font-semibold">
+          <span className="h-4 w-4 border-2 border-slate-400 border-t-slate-800 rounded-full animate-spin" />
+          <span>Verifying admin session...</span>
+        </div>
+      </div>
+    );
+  }
 
   if (isAdminAuthenticated) {
     return <>{children}</>;

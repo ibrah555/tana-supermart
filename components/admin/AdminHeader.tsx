@@ -48,7 +48,7 @@ export function AdminHeader() {
           <span className="h-2 w-2 rounded-full bg-emerald-500" />
           <span>M-PESA Daraja:</span>
           <span className="font-bold text-slate-900 uppercase">
-            {mpesaSettings.environment} ({mpesaSettings.businessShortCode})
+            {mpesaSettings?.environment || "sandbox"} ({mpesaSettings?.businessShortCode || "174379"})
           </span>
         </div>
 
