@@ -184,7 +184,7 @@ function mapPrismaUserToFrontend(u: any): User {
 }
 
 export function AdminProvider({ children }: { children: ReactNode }) {
-  const [adminUser, setAdminUser] = useState<AdminCredential | null>(defaultAdminCredentials);
+  const [adminUser, setAdminUser] = useState<AdminCredential | null>(null);
   const [countyRates, setCountyRates] = useState<CountyShippingRate[]>(defaultCountyShippingRates);
   const [commissions, setCommissions] = useState<CategoryCommission[]>(defaultCategoryCommissions);
   const [mpesaSettings, setMpesaSettings] = useState<MpesaSettings>(defaultMpesaSettings);
@@ -274,7 +274,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       if (storedAuth) {
         setAdminUser(JSON.parse(storedAuth));
       } else {
-        setAdminUser(defaultAdminCredentials);
+        setAdminUser(null);
       }
 
       const storedRates = localStorage.getItem(ADMIN_RATES_KEY);
@@ -366,6 +366,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
 
   const logoutAdmin = () => {
     setAdminUser(null);
+    try {
+      localStorage.removeItem(ADMIN_AUTH_KEY);
+    } catch {}
+    if (typeof window !== "undefined") {
+      window.location.href = "/admin/login";
+    }
   };
 
   // Presets & Settings with live DB updates

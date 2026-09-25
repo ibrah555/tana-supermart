@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import Link from "next/link";
 import { useAdmin } from "@/context/AdminContext";
 import { ShieldCheck, KeyRound, ArrowRight } from "lucide-react";
 import { defaultAdminCredentials } from "@/data/adminPresets";
@@ -117,10 +118,24 @@ export function AdminAuthGuard({ children }: { children: ReactNode }) {
 
           <button
             type="submit"
-            className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded transition-colors text-xs"
+            disabled={loading}
+            className="w-full py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-50 text-white font-bold rounded transition-colors text-xs flex items-center justify-center gap-2"
           >
-            Authenticate Admin Session
+            {loading ? (
+              <span>Authenticating...</span>
+            ) : (
+              <span>Authenticate Admin Session</span>
+            )}
           </button>
+
+          <div className="pt-2 flex items-center justify-between text-[11px] text-slate-600">
+            <Link href="/admin/login" className="hover:text-slate-900 underline font-medium">
+              Dedicated Login Page ›
+            </Link>
+            <Link href="/" className="hover:text-slate-900 underline font-medium">
+              Return to Storefront
+            </Link>
+          </div>
         </form>
       </div>
     </div>
