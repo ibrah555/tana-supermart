@@ -13,7 +13,7 @@ export function AdminHeader() {
     if (pathname?.startsWith("/admin/orders")) return "Orders & Fulfillment Records";
     if (pathname?.startsWith("/admin/catalog")) return "Stock Control & Inventory Master";
     if (pathname?.startsWith("/admin/reports")) return "Financial & Products Performance Reports";
-    if (pathname?.startsWith("/admin/users")) return "User Management & Role Assignments";
+    if (pathname?.startsWith("/admin/users")) return "Staff Members & Team Permissions";
     if (pathname?.startsWith("/admin/categories")) return "Category Taxonomy Management";
     if (pathname?.startsWith("/admin/finance")) return "M-PESA Daraja Financial Ledger";
     if (pathname?.startsWith("/admin/vendors")) return "Vendors & Store Governance";

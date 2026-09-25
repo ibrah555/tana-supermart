@@ -28,7 +28,7 @@ export function AdminSidebar() {
     { label: "Orders & Records", href: "/admin/orders", icon: Package },
     { label: "Stock & Inventory", href: "/admin/catalog", icon: ShoppingBag },
     { label: "Reports & Profit", href: "/admin/reports", icon: BarChart3 },
-    { label: "User Management", href: "/admin/users", icon: Users },
+    { label: "Staff & Permissions", href: "/admin/users", icon: ShieldCheck },
     { label: "Categories", href: "/admin/categories", icon: Layers },
     { label: "M-PESA Finance", href: "/admin/finance", icon: CreditCard },
     { label: "Vendors & Stores", href: "/admin/vendors", icon: Store },
